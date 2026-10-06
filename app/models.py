@@ -12,6 +12,28 @@ class OrderItem(BaseModel):
     quantity: int = Field(ge=1)
 
 
+class AppliedDiscount(BaseModel):
+    """Snapshot of a discount at the moment it was applied. Everything needed
+    for settlement is copied here, so later changes to the code or to the
+    partner's split never alter history."""
+
+    code: str
+    percent_off_bps: int
+    cap_paise: int
+    amount_paise: int
+    partner_share_bps: int
+    rayy_share_bps: int
+    partner_amount_paise: int
+    rayy_amount_paise: int
+    applied_at: datetime
+
+
+class PaymentRecord(BaseModel):
+    payment_id: str
+    amount_paise: int
+    received_at: datetime
+
+
 class Order(BaseModel):
     order_id: str
     partner_id: str
@@ -21,6 +43,9 @@ class Order(BaseModel):
     currency: str = "INR"
     status: str
     created_at: datetime
+    discount: AppliedDiscount | None = None
+    payment: PaymentRecord | None = None
+    paid_at: datetime | None = None
 
 
 class DiscountCode(BaseModel):
